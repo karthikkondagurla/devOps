@@ -1,51 +1,45 @@
-# DevOps Demo: Flask + Docker + CI/CD
+# Pipeline Pulse: Full-Stack DevOps Demo
 
-A simple reference project demonstrating a basic DevOps pipeline using Python Flask, Docker, and GitHub Actions.
+An advanced DevOps reference project demonstrating a Full-Stack application (React + Flask) with a comprehensive CI/CD pipeline.
 
-## Project Structure
-- `app.py`: Simple Flask web application.
-- `Dockerfile`: Configuration for containerizing the app.
-- `.github/workflows/ci-cd.yml`: Automated pipeline for testing and building.
-- `tests/`: Unit tests for the application.
+## Architecture
+- **Frontend**: React (Vite) - Serves the UI.
+- **Backend**: Python Flask - Serves the API.
+- **Infrastructure**: Docker & Docker Compose.
+- **CI/CD**: GitHub Actions -> GitHub Container Registry (GHCR).
 
 ## Getting Started
 
 ### Prerequisites
-- Python 3.9+
-- Docker (optional, for running containers)
+- Docker & Docker Compose
+- Node.js 18+ (for local frontend dev)
+- Python 3.9+ (for local backend dev)
+
+### Quick Start (Docker)
+Run the entire stack with one command:
+```bash
+docker-compose up --build
+```
+- Frontend: `http://localhost:3000`
+- Backend: `http://localhost:5000`
 
 ### Local Development
 
-1. **Install dependencies:**
+1. **Backend**:
    ```bash
    pip install -r requirements.txt
-   ```
-
-2. **Run tests:**
-   ```bash
-   pytest
-   ```
-
-3. **Run the application:**
-   ```bash
    python app.py
    ```
-   Access at `http://localhost:5000`
 
-### Docker Usage
-
-1. **Build the image:**
+2. **Frontend**:
    ```bash
-   docker build -t devops-demo .
+   cd client
+   npm install
+   npm run dev
    ```
 
-2. **Run the container:**
-   ```bash
-   docker run -p 5000:5000 devops-demo
-   ```
-
-### CI/CD Pipeline
-This project includes a GitHub Actions workflow that automatically runs on every push to `main` or pull request. It performs:
-1. **Linting**: Checks code quality with `flake8`.
-2. **Testing**: Runs unit tests with `pytest`.
-3. **Build**: Verifies the Docker image builds successfully.
+## CI/CD Pipeline
+The GitHub Actions workflow (`.github/workflows/ci-cd.yml`) automatically:
+1. **Tests** both Frontend and Backend in parallel.
+2. **Builds** Docker images for both services.
+3. **Publishes** images to GitHub Container Registry (GHCR) upon success.

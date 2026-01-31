@@ -1,4 +1,4 @@
-name: DevOps Demo CI/CD
+name: Pipeline Pulse CI/CD
 
 on:
   push:
@@ -6,35 +6,104 @@ on:
   pull_request:
     branches: [ "main" ]
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
 jobs:
-  build-and-test:
+  # ------------------------------------------------------------------
+  # JOB 1: TEST & LINT (Parallel Matrix)
+  # ------------------------------------------------------------------
+  test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [backend, frontend]
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      # BACKEND TESTING
+      - name: Set up Python 3.9
+        if: matrix.service == 'backend'
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+      
+      - name: Install Backend Deps
+        if: matrix.service == 'backend'
+        run: |
+          pip install flake8 pytest flask flask-cors
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          
+      - name: Lint Backend
+        if: matrix.service == 'backend'
+        run: flake8 . --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+      - name: Test Backend
+        if: matrix.service == 'backend'
+        run: pytest
+
+      # FRONTEND TESTING (Simple Build Check)
+      - name: Set up Node
+        if: matrix.service == 'frontend'
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'npm'
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install Frontend Deps
+        if: matrix.service == 'frontend'
+        working-directory: ./client
+        run: npm install
+
+      - name: Build Frontend
+        if: matrix.service == 'frontend'
+        working-directory: ./client
+        run: npm run build
+
+  # ------------------------------------------------------------------
+  # JOB 2: BUILD & PUBLISH DOCKER IMAGES
+  # ------------------------------------------------------------------
+  build-and-push:
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    strategy:
+      matrix:
+        include:
+          - dockfile: Dockerfile
+            image: backend
+            context: .
+          - dockfile: client/Dockerfile
+            image: client
+            context: client
 
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Set up Python 3.9
-      uses: actions/setup-python@v4
-      with:
-        python-version: "3.9"
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install flake8 pytest
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-${{ matrix.image }}
 
-    - name: Lint with flake8
-      run: |
-        # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-
-    - name: Test with pytest
-      run: |
-        pytest
-
-    - name: Build Docker image
-      run: |
-        docker build . --file Dockerfile --tag devops-demo:latest
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: ${{ matrix.context }}
+          file: ${{ matrix.dockfile }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
