@@ -21,9 +21,5 @@ services:
     dockerfilePath: ./client/Dockerfile
     dockerContext: ./client
     plan: free
-    envVars:
       - key: VITE_API_URL
-        fromService:
-          type: web
-          name: pipeline-pulse-backend
-          property: url
+        value: https://pipeline-pulse-backend.onrender.com
