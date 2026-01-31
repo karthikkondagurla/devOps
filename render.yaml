@@ -1,0 +1,29 @@
+services:
+  # -----------------------------------------------------
+  # 1. FLASK BACKEND
+  # -----------------------------------------------------
+  - type: web
+    name: pipeline-pulse-backend
+    env: docker
+    dockerFilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: PORT
+        value: 5000
+
+  # -----------------------------------------------------
+  # 2. REACT FRONTEND
+  # -----------------------------------------------------
+  - type: web
+    name: pipeline-pulse-frontend
+    env: docker
+    dockerFilePath: ./client/Dockerfile
+    dockerContext: ./client
+    plan: free
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: pipeline-pulse-backend
+          property: url

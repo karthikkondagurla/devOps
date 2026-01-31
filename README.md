@@ -43,3 +43,16 @@ The GitHub Actions workflow (`.github/workflows/ci-cd.yml`) automatically:
 1. **Tests** both Frontend and Backend in parallel.
 2. **Builds** Docker images for both services.
 3. **Publishes** images to GitHub Container Registry (GHCR) upon success.
+
+## Live Deployment (Render)
+This project is configured for **Render.com**.
+
+1. Create a [Render Account](https://render.com).
+2. Click **New +** -> **Blueprint**.
+3. Connect your GitHub account and select this repository.
+4. Click **Apply**.
+
+Render will automatically:
+- Build and deploy the Flask Backend.
+- Build the React Frontend (injecting the correct Backend URL).
+- Give you a live public URL (e.g., `https://pipeline-pulse-frontend.onrender.com`).
