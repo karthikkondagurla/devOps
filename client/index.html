@@ -1,12 +1,85 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pipeline Pulse</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #282c34;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+        }
+
+        .card {
+            background-color: #333;
+            border: 1px solid #444;
+            color: white;
+            margin-top: 20px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+        }
+    </style>
+    <!-- Load Environment Variables -->
+    <script src="env-config.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="display-4 fw-bold">Pipeline Pulse</h1>
+        <p class="lead">Full-Stack DevOps Demo (Vanilla JS Edition)</p>
+
+        <div class="card mx-auto" style="max-width: 500px;">
+            <div class="card-body">
+                <h5 class="card-title">Backend Response</h5>
+                <hr class="border-secondary">
+                <div id="loading" class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <pre id="output" class="text-start mt-3" style="display: none;"></pre>
+                <div id="error" class="text-danger mt-3" style="display: none;"></div>
+            </div>
+            <div class="card-footer text-muted border-secondary">
+                API Endpoint: <span id="api-url" class="font-monospace"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 1. Get API URL from injected config OR fallback to localhost
+        const API_URL = (window.ENV && window.ENV.VITE_API_URL) || 'http://localhost:5000';
+        document.getElementById('api-url').textContent = API_URL;
+
+        // 2. Fetch Data
+        fetch(`${API_URL}/`)
+            .then(response => {
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('loading').style.display = 'none';
+                const output = document.getElementById('output');
+                output.style.display = 'block';
+                output.textContent = JSON.stringify(data, null, 2);
+            })
+            .catch(error => {
+                document.getElementById('loading').style.display = 'none';
+                const errDiv = document.getElementById('error');
+                errDiv.style.display = 'block';
+                errDiv.innerHTML = `<strong>Connection Failed:</strong><br>${error.message}<br><br>Make sure the Backend is running and CORS is enabled.`;
+            });
+    </script>
+</body>
+
 </html>

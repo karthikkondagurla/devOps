@@ -44,24 +44,9 @@ jobs:
         if: matrix.service == 'backend'
         run: pytest
 
-      # FRONTEND TESTING (Simple Build Check)
-      - name: Set up Node
-        if: matrix.service == 'frontend'
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-          cache: 'npm'
-          cache-dependency-path: client/package-lock.json
-
-      - name: Install Frontend Deps
-        if: matrix.service == 'frontend'
-        working-directory: ./client
-        run: npm install
-
-      - name: Build Frontend
-        if: matrix.service == 'frontend'
-        working-directory: ./client
-        run: npm run build
+      # FRONTEND TESTING (Skipped for Static Site)
+      # - name: Set up Node
+      #   uses: actions/setup-node@v3 ...
 
   # ------------------------------------------------------------------
   # JOB 2: BUILD & PUBLISH DOCKER IMAGES
