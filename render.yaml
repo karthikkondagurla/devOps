@@ -23,4 +23,4 @@ services:
     plan: free
     envVars:
       - key: VITE_API_URL
-        value: https://pipeline-pulse-backend.onrender.com
+        value: https://pipeline-pulse-backend-kuui.onrender.com
