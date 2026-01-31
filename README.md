@@ -1,4 +1,4 @@
-# Pipeline Pulse: Full-Stack DevOps Demo
+#Full-Stack DevOps Demo
 
 An advanced DevOps reference project demonstrating a Full-Stack application (React + Flask) with a comprehensive CI/CD pipeline.
 
