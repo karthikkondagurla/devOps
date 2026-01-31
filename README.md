@@ -3,7 +3,7 @@
 An advanced DevOps reference project demonstrating a Full-Stack application (React + Flask) with a comprehensive CI/CD pipeline.
 
 ## Architecture
-- **Frontend**: React (Vite) - Serves the UI.
+- **Frontend**: Vanilla JS (HTML5/Bootstrap) - Lightweight UI served by Nginx.
 - **Backend**: Python Flask - Serves the API.
 - **Infrastructure**: Docker & Docker Compose.
 - **CI/CD**: GitHub Actions -> GitHub Container Registry (GHCR).
@@ -12,7 +12,6 @@ An advanced DevOps reference project demonstrating a Full-Stack application (Rea
 
 ### Prerequisites
 - Docker & Docker Compose
-- Node.js 18+ (for local frontend dev)
 - Python 3.9+ (for local backend dev)
 
 ### Quick Start (Docker)
@@ -27,15 +26,18 @@ docker-compose up --build
 
 1. **Backend**:
    ```bash
+   # Install Dependencies
    pip install -r requirements.txt
+   # Run Flask
    python app.py
    ```
 
 2. **Frontend**:
    ```bash
    cd client
-   npm install
-   npm run dev
+   # No install needed! Just serve the file.
+   # You can use Python to serve it:
+   python -m http.server 3000
    ```
 
 ## CI/CD Pipeline
