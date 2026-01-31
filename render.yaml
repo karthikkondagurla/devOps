@@ -5,7 +5,7 @@ services:
   - type: web
     name: pipeline-pulse-backend
     env: docker
-    dockerFilePath: ./Dockerfile
+    dockerfilePath: ./Dockerfile
     plan: free
     healthCheckPath: /health
     envVars:
@@ -18,7 +18,7 @@ services:
   - type: web
     name: pipeline-pulse-frontend
     env: docker
-    dockerFilePath: ./client/Dockerfile
+    dockerfilePath: ./client/Dockerfile
     dockerContext: ./client
     plan: free
     envVars:
